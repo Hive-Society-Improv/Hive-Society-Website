@@ -81,7 +81,8 @@ When a decision changes conventions, commands, or layout, update [AGENTS.md](../
 
 - [ ] **Aux Board section** (decided 2026-09-24: removed from member cards; give it its own section under Alumni, e.g. columns of committees with names, no photos). Roster as of Fall '26: Merch & Design: Katie Johnson, Tess O'Brien, Jonathan Ocampo, Aarush Sinha · AKA Rep: Ari Warner · Diversity Chair: Ari Warner, Neha Samuel · Webmaster: Usman Faridi, Max Wanger, Colin Crook · Historian: Neha Samuel · Alumni Relations Rep: Uma Ramesh, Ari Warner · Big Little: Daniel Shafiabady, Connor Altan · Videography: Ryan Berri, Connor Altan, Daniel Shafiabady, Miette Thompson, Usman Faridi, Katie Johnson, Aarush Sinha · Curtis Orchard Trip: Tess O'Brien · Improv Olympics Coordinators: Ryan Berri, Aarush Sinha.
 
-### Beeble (retired 2026-10-04; handbook archived)
+### Beeble (old site dead 2026-10-04; archived; future undecided, likely revived)
+- [ ] **Decide the handbook's future** (likely revive it, sturdier). Requirements: owned by the org, several editors, survives any one person leaving, free hosting. Options weighed 2026-10-04: **Starlight** (Astro's docs framework: same stack, CI, and Cloudflare hosting as this site; Markdown + the same CMS; recommended), keep **mdBook** but in the org fork with org-owned hosting (smallest change), **MediaWiki** (a real wiki, but it needs a PHP server and database to patch and back up, the opposite of sturdy for a student club; hosted wikis bring back the one-account problem). Could also hold the show archive.
 - [ ] Decide whether to republish the handbook prose (set descriptions, foreword, intro) here. Its repo has **no license**, so the author still holds the copyright: try once more to reach Lukas Unguraitis first. The archive is the org fork `Hive-Society-Improv/beeble`.
 - [ ] **On hold:** render the handbook prose as `/handbook` on this site (only after the decision above).
 ### Astro migration (on hold)
