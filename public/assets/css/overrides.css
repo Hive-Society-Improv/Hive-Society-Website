@@ -115,10 +115,14 @@ section.embed-section .calendar-subscribe .btn {
 .member-grid .item-subtitle { line-height: 1.2; }
 .skip-link:focus { position: absolute; top: 0.5rem; left: 0.5rem; z-index: 1100; width: max-content; padding: 0.5rem 1rem; }
 
-/* Homepage hero: on very wide screens the 8/12-column photo grows taller than the viewport. Cap it at
-   65vh and crop (centered) instead of letting the page open on nothing but photo. On 16:9 screens it
-   is already ~62vh, so the cap only engages on ultrawide or short windows. */
-section.hero .image-wrapper img { max-height: 65vh; object-fit: cover; }
+/* Homepage hero: fills the first screen, so the footer starts below the fold, with the content centered
+   in it. The photo is cropped at the sides (never stretched: object-fit) to a taller 3:2, or 4:3 on phones
+   where the full-width 1.9:1 original was a thin strip. The 65vh cap still keeps ultrawide or short windows
+   from opening on nothing but photo. */
+section.hero { min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; justify-content: center; padding-bottom: 3rem; }
+section.hero .row { row-gap: 1.5rem; }
+section.hero .image-wrapper img { aspect-ratio: 3 / 2; height: auto; max-height: 65vh; object-fit: cover; object-position: center; }
+@media (max-width: 767px) { section.hero .image-wrapper img { aspect-ratio: 4 / 3; } }
 
 /* Moved out of inline style attributes (html-validate: no-inline-style). */
 /* Specificity (0,4,1) + loading last matches the old inline style: beats the plugin's 50px and the
@@ -156,7 +160,7 @@ section.hero .image-wrapper img { max-height: 65vh; object-fit: cover; }
 .member-grid .item-img img { aspect-ratio: 1; object-fit: cover; }
 .member-grid .item-img img[src$="portrait-placeholder.jpg"] { object-position: right center; }
 
-/* Special webmaster card :P animated rainbow text. People who ask their OS for reduced
+/* Animated rainbow text for quips :P (the webmaster card, Kyle's "Heterosexual"). People who ask their OS for reduced
    motion get the gradient without the animation. Every stop is darkened to at least 4.5:1 against
    the yellow page (pure yellow and green were ~1.1:1), so each letter stays readable. */
 .rainbow-text {
@@ -191,3 +195,6 @@ section.hero .image-wrapper img { max-height: 65vh; object-fit: cover; }
   vertical-align: middle;
   border-radius: 0 !important; /* the site-wide image rounding is !important */
 }
+
+/* No rubber-band overscroll: pulling past the top or bottom revealed a white canvas behind the page. */
+html, body { overscroll-behavior-y: none; }
