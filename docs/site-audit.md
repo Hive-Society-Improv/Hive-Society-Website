@@ -100,7 +100,7 @@ The rule that makes this work is that **templates contain no literal colors or c
 
 ## 6. Beeble (external data source)
 
-> **Retired 2026-10-04.** The maintainer stopped responding and the site went down. Members and teams now live as YAML in this repo (see the 2026-10-04 decision in `PROJECT_LOG.md`); the handbook is archived as the org fork `Hive-Society-Improv/beeble`. The rest of this section is the original assessment.
+> **Site dead 2026-10-04.** The maintainer stopped responding and the site went down; whether to revive it (sturdier) is undecided. Members and teams now live as YAML in this repo (see the 2026-10-04 decision in `PROJECT_LOG.md`); the handbook is archived as the org fork `Hive-Society-Improv/beeble`. The rest of this section is the original assessment.
 
 *Updated 2026-09-23.* Beeble is **Hive's handbook, built with [mdBook](https://rust-lang.github.io/mdBook/)**: Markdown in git (`lumirth/beeble`, by Lukas Unguraitis), deployed with GitHub Pages to **https://mirth.cc/beeble/**. It has no API or database; the git repo *is* the data source. Most chapters are stubs, and its planned "Archive: Roster / Achievements / Shows" section is commented out.
 
