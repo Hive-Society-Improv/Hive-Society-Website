@@ -335,7 +335,7 @@ Open the failed check on the PR and read the log; every check prints what's wron
 
 | When | Task |
 |---|---|
-| Weekly | Review and merge Dependabot PRs once their checks pass |
+| Weekly | Review and merge Dependabot PRs once their checks pass. If one fails because two packages can't agree on a version (`npm ci` says `ERESOLVE`), don't force it: hold that update with an `ignore` entry in `.github/dependabot.yml`, with a comment saying when to remove it |
 | When the daily form check emails you | [§11](#11-when-ci-fails), last row |
 | Start of each semester | Upcoming shows are in the shows calendar; roster is updated (leavers → Alumni); `ROSTER_OFFICERS` lists current officers |
 | When officers change | Update GitHub access, `ROSTER_OFFICERS`, and who can access the Hive Google and Cloudflare accounts |
