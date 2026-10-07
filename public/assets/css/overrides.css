@@ -116,13 +116,13 @@ section.embed-section .calendar-subscribe .btn {
 .skip-link:focus { position: absolute; top: 0.5rem; left: 0.5rem; z-index: 1100; width: max-content; padding: 0.5rem 1rem; }
 
 /* Homepage hero: fills the first screen, so the footer starts below the fold, with the content centered
-   in it. The photo is cropped at the sides (never stretched: object-fit) to a taller 3:2, or 4:3 on phones
-   where the full-width 1.9:1 original was a thin strip. The 65vh cap still keeps ultrawide or short windows
-   from opening on nothing but photo. */
+   in it. The photo's 1.9:1 original has empty classroom at the sides, so it is cropped there (never
+   stretched: object-fit) to 7:5, the narrowest crop that keeps everyone in frame, which makes it taller.
+   Its height is capped to the screen minus the hero's padding (7rem top, 3rem bottom), so short or
+   ultrawide windows crop instead of pushing the photo off screen. */
 section.hero { min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; justify-content: center; padding-bottom: 3rem; }
 section.hero .row { row-gap: 1.5rem; }
-section.hero .image-wrapper img { aspect-ratio: 3 / 2; height: auto; max-height: 65vh; object-fit: cover; object-position: center; }
-@media (max-width: 767px) { section.hero .image-wrapper img { aspect-ratio: 4 / 3; } }
+section.hero .image-wrapper img { aspect-ratio: 7 / 5; height: auto; max-height: calc(100vh - 10rem); max-height: calc(100svh - 10rem); object-fit: cover; object-position: center; }
 
 /* Moved out of inline style attributes (html-validate: no-inline-style). */
 /* Specificity (0,4,1) + loading last matches the old inline style: beats the plugin's 50px and the

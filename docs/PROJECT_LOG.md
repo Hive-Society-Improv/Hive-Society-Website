@@ -123,7 +123,7 @@ Prefer an existing, maintained package over our own code where it fits. Versions
 - [ ] Create the Cloudflare Tunnel and the `cloudflared-token` Secret.
 
 ## Done
-- 2026-10-04: Homepage hero fills the first screen (footer below the fold), photo cropped at the sides to 3:2 (4:3 on phones), never stretched; more spacing. No rubber-band overscroll (`overscroll-behavior`). Member cards: photo → name 8 px, name → year 4 px. Copyright year filled at build (`data-current-year`). Rainbow on Kyle's quip.
+- 2026-10-04: Homepage hero fills the first screen (footer below the fold), photo cropped at the sides to 7:5 (everyone still in frame) and as tall as the screen allows, never stretched; more spacing. No rubber-band overscroll (`overscroll-behavior`). Member cards: photo → name 8 px, name → year 4 px. Copyright year filled at build (`data-current-year`). Rainbow on Kyle's quip.
 - 2026-10-04: PRs labeled automatically by type (`type: content`, `type: fix`, …, plus `breaking`) from the title, reading the allowed types from `pr-title.yml`; filter with `label:"type: …"`.
 - 2026-10-04: Node 26 everywhere: `.nvmrc`, CI (now reads `.nvmrc` via `node-version-file`), Cloudflare builds, and the container (#11). `engines` stays `>=24`, the oldest version that runs `.mts` without flags.
 - 2026-10-04: Ruleset **Protect main** (active, no bypass): PR required (0 approvals until the content-PR policy is decided), squash-only, required checks Lint, typecheck, test / Kubernetes manifests / Container image / Conventional PR title, no force-push or deletion. Repo settings: squash commit title = PR title; head branches deleted automatically after merge.
