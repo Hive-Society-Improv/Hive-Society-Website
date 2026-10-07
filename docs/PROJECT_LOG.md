@@ -83,6 +83,9 @@ When a decision changes conventions, commands, or layout, update [AGENTS.md](../
 
 - [ ] **Aux Board section** (decided 2026-09-24: removed from member cards; give it its own section under Alumni, e.g. columns of committees with names, no photos). Roster as of Fall '26: Merch & Design: Katie Johnson, Tess O'Brien, Jonathan Ocampo, Aarush Sinha · AKA Rep: Ari Warner · Diversity Chair: Ari Warner, Neha Samuel · Webmaster: Usman Faridi, Max Wanger, Colin Crook · Historian: Neha Samuel · Alumni Relations Rep: Uma Ramesh, Ari Warner · Big Little: Daniel Shafiabady, Connor Altan · Videography: Ryan Berri, Connor Altan, Daniel Shafiabady, Miette Thompson, Usman Faridi, Katie Johnson, Aarush Sinha · Curtis Orchard Trip: Tess O'Brien · Improv Olympics Coordinators: Ryan Berri, Aarush Sinha.
 
+- [ ] Breakpoints are off by one between rules inherited from Mobirise: some switch at 767/991px, others at 768/992px, so at exactly 768 or 992px wide a few rules disagree. Settle on Bootstrap's (`max-width: 767.98px` / `min-width: 768px`). Deliberately left out of the CSS cleanup (2026-10-07), which changed no rendering.
+- [ ] Google Fonts loads Inter Tight in all 18 weights and italics; the site uses about four. Trim the URL on every page (faster first paint).
+
 ### Beeble
 - [ ] Confirm with managers: Beeble as SoT via structured data + monorepo (see decision above).
 - [ ] Import `lumirth/beeble` history into `handbook/` (`git subtree add` or `git filter-repo`); archive the old repo with a pointer.
@@ -97,7 +100,7 @@ When a decision changes conventions, commands, or layout, update [AGENTS.md](../
 ### Astro migration (on hold)
 - [ ] Scaffold Astro (TypeScript strict) alongside the current site; port layout (nav/footer) and one page first to validate the approach.
 - [ ] Content collections + schemas: members, teams, events; theme.yaml → CSS custom properties; site.yaml → settings.
-- [ ] Port pages; retire `public/` Mobirise pages, `src/render.mts` fingerprinting, and `overrides.css`.
+- [ ] Port pages; retire `public/` Mobirise pages and `src/render.mts` fingerprinting; port `css/base.css` + `css/sections/*.css` into components (one section file ≈ one component).
 - [ ] Keep the Node server path via `@astrojs/node` only if a dynamic feature needs it.
 - [ ] Add **Lighthouse CI** (`@lhci/cli`) with the migration: SEO, accessibility, and performance score thresholds on the built pages. Deferred until then because the page structure is being rebuilt anyway; `tests/seo.test.mts` covers the SEO basics meanwhile.
 - [ ] Add **stylelint** + `stylelint-no-unsupported-browser-features` (doiuse) when the CSS is rewritten, so new CSS can't use features our visitors' browsers lack. Browsers: last 3 Chrome, Firefox, Safari, iOS, Edge, ChromeAndroid, Samsung, plus Firefox ESR (the `defaults` list flags Opera Mini/KaiOS for basics like `calc`: 270 warnings). Ignore `intrinsic-width`, `css-autofill`, `css-text-indent`: Firefox/Samsung are only "partial" on sub-features we don't use. Trial run on the current CSS (2026-10-06) found 9 warnings, all those false positives, so it isn't worth adding before the rewrite.
@@ -124,6 +127,7 @@ Prefer an existing, maintained package over our own code where it fits. Versions
 - [ ] Create the Cloudflare Tunnel and the `cloudflared-token` Secret.
 
 ## Done
+- 2026-10-07: CSS reorganized to mirror the HTML: `css/base.css` (page-wide) plus one file per kind of section in `css/sections/` (`hero.css` styles `<section class="hero">`); each page links only the files for its sections (`tests/css-structure.test.mts`). `sections.css` and `overrides.css` are gone: each override was merged into the rule it overrode. Removed ~230 rules that matched nothing on any page (Mobirise kit leftovers: carousels, forms, modals, unused button colors, IE-only and `.collapsed` navbar rules, declarations always beaten by `!important`), merged duplicate selectors, one media block per breakpoint after the rules it adjusts. 2,700 → ~1,300 lines, with comments explaining each section. Verified identical by comparing every element's computed style (8 pages × 7 widths, plus open menu/dropdown, scrolled, hover, focus) before and after.
 - 2026-10-04: Homepage hero fills the first screen (footer below the fold), photo cropped at the sides to 7:5 (everyone still in frame) and as tall as the screen allows, never stretched; more spacing. No rubber-band overscroll (`overscroll-behavior`). Member cards: photo → name 8 px, name → year 4 px. Copyright year filled at build (`data-current-year`). Rainbow on Kyle's quip.
 - 2026-10-04: PRs labeled automatically by type (`type: content`, `type: fix`, …, plus `breaking`) from the title, reading the allowed types from `pr-title.yml`; filter with `label:"type: …"`.
 - 2026-10-04: Node 26 everywhere: `.nvmrc`, CI (now reads `.nvmrc` via `node-version-file`), Cloudflare builds, and the container (#11). `engines` stays `>=24`, the oldest version that runs `.mts` without flags.
