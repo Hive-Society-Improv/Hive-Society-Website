@@ -100,6 +100,7 @@ When a decision changes conventions, commands, or layout, update [AGENTS.md](../
 - [ ] Port pages; retire `public/` Mobirise pages, `src/render.mts` fingerprinting, and `overrides.css`.
 - [ ] Keep the Node server path via `@astrojs/node` only if a dynamic feature needs it.
 - [ ] Add **Lighthouse CI** (`@lhci/cli`) with the migration: SEO, accessibility, and performance score thresholds on the built pages. Deferred until then because the page structure is being rebuilt anyway; `tests/seo.test.mts` covers the SEO basics meanwhile.
+- [ ] Add **stylelint** + `stylelint-no-unsupported-browser-features` (doiuse) when the CSS is rewritten, so new CSS can't use features our visitors' browsers lack. Browsers: last 3 Chrome, Firefox, Safari, iOS, Edge, ChromeAndroid, Samsung, plus Firefox ESR (the `defaults` list flags Opera Mini/KaiOS for basics like `calc`: 270 warnings). Ignore `intrinsic-width`, `css-autofill`, `css-text-indent`: Firefox/Samsung are only "partial" on sub-features we don't use. Trial run on the current CSS (2026-10-06) found 9 warnings, all those false positives, so it isn't worth adding before the rewrite.
 
 ### Existing libraries for things we built (noted 2026-09-24; nothing replaced yet)
 Prefer an existing, maintained package over our own code where it fits. Versions checked on npm 2026-09-24. Many of these come free with Astro, so most swaps should happen *as part of* the migration rather than before it.
