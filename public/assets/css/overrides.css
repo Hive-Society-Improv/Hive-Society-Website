@@ -119,10 +119,18 @@ section.embed-section .calendar-subscribe .btn {
    in it. The photo's 1.9:1 original has empty classroom at the sides, so it is cropped there (never
    stretched: object-fit) to 7:5, the narrowest crop that keeps everyone in frame, which makes it taller.
    Its height is capped to the screen minus the hero's padding (7rem top, 3rem bottom), so short or
-   ultrawide windows crop instead of pushing the photo off screen. */
+   ultrawide windows crop instead of pushing the photo off screen.
+   Side by side (992px+), the photo sits midway between the navbar and the fold: the fixed navbar ends
+   106px down (16px margin + 90px bar), so the top padding is that plus the same gap as the bottom
+   padding, and centering splits any spare height evenly. Stacked (phones), the content is taller than
+   the screen, so the original padding stays. */
 section.hero { min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; justify-content: center; padding-bottom: 3rem; }
 section.hero .row { row-gap: 1.5rem; }
 section.hero .image-wrapper img { aspect-ratio: 7 / 5; height: auto; max-height: calc(100vh - 10rem); max-height: calc(100svh - 10rem); object-fit: cover; object-position: center; }
+@media (min-width: 992px) {
+  section.hero { --hero-gap: 1.5rem; padding-top: calc(106px + var(--hero-gap)); padding-bottom: var(--hero-gap); }
+  section.hero .image-wrapper img { max-height: calc(100vh - 106px - 2 * var(--hero-gap)); max-height: calc(100svh - 106px - 2 * var(--hero-gap)); }
+}
 
 /* Moved out of inline style attributes (html-validate: no-inline-style). */
 /* Specificity (0,4,1) + loading last matches the old inline style: beats the plugin's 50px and the
