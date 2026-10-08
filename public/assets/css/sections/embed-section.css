@@ -1,0 +1,91 @@
+/*
+ * Embed section (calendar and mailing list pages): a page title and intro beside an embedded
+ * calendar or Google Form. The frame shows a "Loading…" placeholder (its data-loading-label)
+ * until the embed has loaded; js/embed-loading.js toggles it.
+ */
+.embed-section {
+  padding-top: var(--page-top);
+  padding-bottom: 3rem;
+  background-color: #ffeb69;
+}
+.embed-section .row {
+  row-gap: 1.5rem;
+}
+.embed-section .section-title {
+  margin-bottom: 1rem;
+  color: #593269;
+}
+.embed-section .section-subtitle {
+  margin-bottom: 1.5rem;
+  color: #593269;
+}
+/* Subscribe buttons sit side by side and wrap under each other on narrow columns. */
+.embed-section .calendar-subscribe {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.embed-section .calendar-subscribe .btn {
+  margin: 0;
+}
+
+/* ---- The embed ---- */
+.embed-section .embed-frame {
+  position: relative;
+  height: 30rem;
+  overflow: hidden;
+  border-radius: 2rem;
+  background-color: #ffffff;
+}
+.embed-section .embed-frame iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  transition: opacity 0.3s;
+}
+.embed-section .embed-frame.is-loading iframe {
+  opacity: 0;
+}
+.embed-section .embed-frame.is-loading::before {
+  content: attr(data-loading-label);
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
+  color: #593269;
+  animation: embed-loading-pulse 1.5s ease-in-out infinite alternate;
+}
+@keyframes embed-loading-pulse {
+  from { opacity: 1; }
+  to { opacity: 0.4; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .embed-section .embed-frame.is-loading::before {
+    animation: none;
+  }
+}
+
+/* The Google Form would scroll inside a fixed-height frame, so the frame is sized to the form's full
+   height instead; it's cross-origin, so it can't size itself. Heights are the live form's tallest
+   state (submitted empty, which adds error messages: +32px) at the frame width each breakpoint
+   gives, plus ~8px. The frame keeps its own scrolling as a fallback, so if the form grows
+   (check:form flags question changes) it still works; re-measure then. */
+.embed-section .embed-form {
+  --form-height: 870px; /* frame 689-912px wide: 862px */
+  height: var(--form-height);
+  border-radius: 1.5rem;
+}
+@media (max-width: 767px) {
+  .embed-section .embed-form { --form-height: 925px; } /* frame 529-720px: 916px */
+}
+@media (max-width: 575px) {
+  .embed-section .embed-form { --form-height: 1050px; } /* frame 313-529px: up to 1042px */
+}
+@media (max-width: 359px) {
+  .embed-section .embed-form { --form-height: 1120px; } /* frame 273px (320px phone): 1110px */
+}
+@media (min-width: 992px) and (max-width: 1199px) {
+  .embed-section .embed-form { --form-height: 900px; } /* frame ~598px: 894px */
+}

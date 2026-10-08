@@ -1,0 +1,198 @@
+/*
+ * Site navigation (every page): a translucent pill fixed at the top with the logo, page links, a
+ * "Members" dropdown and social icons. Below 1200px the links and icons fold into a panel under a
+ * hamburger button; above it they sit in the bar.
+ *
+ * Built on Bootstrap's navbar (`navbar-expand-xl`): its collapse script opens the panel and its
+ * dropdown script opens "Members". Colors go through Bootstrap's own --bs-navbar-* and
+ * --bs-dropdown-* variables rather than fighting its selectors. The bar's size comes from
+ * --nav-gap and --nav-height (base.css), which also tell each page's first section where the
+ * bar ends.
+ */
+.site-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1030;
+  background: none; /* base.css gives every section a white background */
+}
+.site-nav .navbar {
+  --bs-navbar-color: #593269;
+  --bs-navbar-hover-color: #593269;
+  --bs-navbar-active-color: #593269;
+  --bs-navbar-nav-link-padding-x: 1rem;
+  --bs-navbar-toggler-focus-width: 0;
+  padding: var(--nav-gap) 1rem 0;
+}
+/* The visible bar. */
+.site-nav .nav-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 1320px;
+  height: var(--nav-height);
+  margin: 0 auto;
+  padding: 0 1rem 0 1.5rem;
+  border-radius: 100vw;
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 30px 60px 0 rgba(27, 31, 10, 0.08);
+  backdrop-filter: blur(8px);
+}
+
+/* ---- Logo and site name ---- */
+.site-nav .nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-right: auto;
+  font-weight: 600;
+  color: #593269;
+}
+.site-nav .nav-brand img {
+  width: auto;
+  height: 3rem;
+  border-radius: 0 !important; /* base.css rounds every image */
+}
+
+/* ---- Page links ---- */
+.site-nav .nav-link {
+  border-radius: 1rem;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  transition: background-color 0.3s;
+}
+.site-nav .nav-link:hover {
+  background-color: rgba(27, 31, 10, 0.06);
+}
+/* The current page (aria-current, set in the markup). */
+.site-nav .nav-link[aria-current],
+.site-nav .dropdown-item[aria-current] {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.3em;
+}
+
+/* ---- "Members" dropdown ---- */
+.site-nav .dropdown-menu {
+  --bs-dropdown-bg: #fffbe1; /* the bar's color over the yellow page, but opaque */
+  --bs-dropdown-border-width: 0;
+  --bs-dropdown-border-radius: 1.5rem;
+  --bs-dropdown-padding-x: 0.5rem;
+  --bs-dropdown-padding-y: 0.5rem;
+  --bs-dropdown-link-color: #593269;
+  --bs-dropdown-link-hover-color: #593269;
+  --bs-dropdown-link-hover-bg: rgba(27, 31, 10, 0.06);
+  --bs-dropdown-link-active-color: #593269;
+  --bs-dropdown-link-active-bg: rgba(27, 31, 10, 0.1);
+  --bs-dropdown-item-padding-y: 0.75rem;
+  --bs-dropdown-item-border-radius: 0.75rem;
+  box-shadow: 0 30px 60px 0 rgba(27, 31, 10, 0.12);
+}
+
+/* ---- Social icons ---- */
+.site-nav .nav-social {
+  display: flex;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.site-nav .nav-social-link {
+  display: block;
+  padding: 0.5rem;
+  font-size: 1.5rem;
+  color: #593269;
+}
+.site-nav .nav-social-link svg {
+  display: block;
+  width: 1.25em;
+  height: 1.25em;
+  fill: currentColor;
+}
+
+/* ---- Hamburger: three bars that turn into an X while the menu is open ---- */
+.site-nav .navbar-toggler {
+  padding: 0.5rem;
+  border: 0;
+}
+.site-nav .hamburger {
+  position: relative;
+  display: block;
+  width: 28px;
+  height: 18px;
+}
+.site-nav .hamburger span {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  border-radius: 1px;
+  background-color: #593269;
+  transition: transform 0.2s, opacity 0.2s;
+}
+.site-nav .hamburger span:nth-child(1) { top: 0; }
+.site-nav .hamburger span:nth-child(2) { top: 8px; }
+.site-nav .hamburger span:nth-child(3) { top: 16px; }
+.site-nav .navbar-toggler[aria-expanded="true"] .hamburger span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+.site-nav .navbar-toggler[aria-expanded="true"] .hamburger span:nth-child(2) { opacity: 0; }
+.site-nav .navbar-toggler[aria-expanded="true"] .hamburger span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+/* ---- Below 1200px: the menu is a panel that drops down under the bar ---- */
+@media (max-width: 1199.98px) {
+  .site-nav .navbar-collapse {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    right: 0;
+    max-height: calc(100svh - var(--nav-bottom) - 1rem);
+    overflow-y: auto;
+    padding: 1rem;
+    border-radius: 1.5rem;
+    /* Opaque: page headings showed through a translucent panel, and backdrop-filter can't blur
+       here (the bar's own blur makes it the backdrop root). Same tint as the bar over yellow. */
+    background: #fffbe1;
+    box-shadow: 0 30px 60px 0 rgba(27, 31, 10, 0.12);
+  }
+  /* Inside the panel the dropdown opens inline, as a tinted box. */
+  .site-nav .dropdown-menu {
+    --bs-dropdown-bg: rgba(27, 31, 10, 0.04);
+    margin: 0.25rem 0;
+    box-shadow: none;
+  }
+  .site-nav .nav-social {
+    margin-top: 0.5rem;
+  }
+}
+@media (max-width: 767px) {
+  .site-nav .navbar {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  .site-nav .nav-bar {
+    padding-left: 1rem;
+    padding-right: 0.5rem;
+  }
+  .site-nav .nav-brand img {
+    height: 2rem;
+  }
+}
+/* ---- 1200px and up: everything in the bar ---- */
+@media (min-width: 1200px) {
+  .site-nav .navbar-nav {
+    margin: 0 auto;
+  }
+  /* A floating panel centered under "Members"; it also opens on hover where there's a mouse. */
+  .site-nav .dropdown-menu {
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 0;
+  }
+}
+@media (min-width: 1200px) and (hover: hover) {
+  .site-nav .dropdown:hover > .dropdown-menu {
+    display: block;
+  }
+}

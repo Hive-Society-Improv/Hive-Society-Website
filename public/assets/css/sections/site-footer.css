@@ -1,0 +1,68 @@
+/* Site footer (every page): page links, social icons, copyright. */
+.site-footer {
+  --icon-bubble: 72px;
+  padding: 1.5rem 0 1.25rem;
+  background-color: #232323;
+  text-align: center;
+}
+.site-footer .footer-menu,
+.site-footer .social-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.site-footer .footer-menu {
+  gap: 0.25rem 2rem;
+  font-size: 1.25rem;
+  line-height: 1.5;
+}
+.site-footer .social-row {
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+/* Round yellow bubbles; the icon fills about half of one. */
+.site-footer .social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--icon-bubble);
+  height: var(--icon-bubble);
+  border-radius: 50%;
+  background-color: #ffeb69;
+  color: #000000;
+  transition: background-color 0.3s ease-in-out;
+}
+.site-footer .social-link:hover,
+.site-footer .social-link:focus {
+  background-color: #ffffff;
+  color: #000000;
+}
+.site-footer .social-link svg {
+  width: 55%;
+  height: 55%;
+  fill: currentColor;
+}
+.site-footer .copyright {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #ffeb69;
+}
+
+/* Phones: all five bubbles fit on one row, and the links tighten up. */
+@media (max-width: 767px) {
+  .site-footer {
+    --icon-bubble: 48px;
+  }
+  .site-footer .footer-menu {
+    gap: 0.25rem 1.25rem;
+    font-size: 1.1rem;
+  }
+  .site-footer .social-row {
+    gap: 0.75rem;
+    margin: 1.25rem 0;
+  }
+}
