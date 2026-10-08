@@ -17,7 +17,7 @@ Everything needed to develop, check, deploy, and maintain the site, written so s
 
 | Tool | Version | Install | Check |
 |---|---|---|---|
-| Node.js (includes npm) | 24+ | [nvm](https://github.com/nvm-sh/nvm): `nvm install 24` | `node --version` |
+| Node.js (includes npm) | 26 (24+ works) | [nvm](https://github.com/nvm-sh/nvm): `nvm install` (reads `.nvmrc`) | `node --version` |
 | git | any recent | [git-scm.com](https://git-scm.com/downloads) | `git --version` |
 
 **Optional**, only for the task listed:
@@ -39,7 +39,7 @@ npm start       # → http://localhost:8080
 
 Use `npm ci`, not `npm install`, unless you're deliberately adding or upgrading a dependency: `npm install` can silently change `package-lock.json`.
 
-There's no build step for development. The code is TypeScript (`.mts` files), and Node 24 runs it directly by ignoring the type annotations. That's why type checking is a separate command ([§3](#3-npm-scripts)).
+There's no build step for development. The code is TypeScript (`.mts` files), and Node (24 and later) runs it directly by ignoring the type annotations. That's why type checking is a separate command ([§3](#3-npm-scripts)).
 
 ## 2. How it fits together
 
@@ -244,14 +244,14 @@ Done once when the project is set up or handed to new owners. Tick each off in [
 1. Cloudflare dashboard → Workers & Pages → Create → **Import a repository** → install Cloudflare's GitHub app and grant it this repository → select it.
 2. Build command `npm ci && npm run export` (the export also runs from `wrangler.jsonc`, so a missing or ignored build command can't ship an empty site); deploy command `npx wrangler deploy`; non-production branch deploy command `npx wrangler preview` (the default; it needs the `previews` block in `wrangler.jsonc`. If the beta misbehaves, `npx wrangler versions upload` also works); production branch `main`; root directory blank. No `NODE_VERSION` needed: `.nvmrc` sets it.
 3. Settings → Domains & Routes → add the custom domain `hivesocietyimprov.com`. Then send `www` to it: Rules → Redirect Rules → template **Redirect from WWW to root**, target `https://hivesocietyimprov.com` (not `www`, or it loops).
-4. **Lock previews to officers.** Preview links show unmerged changes, so only officers should see them. `wrangler.jsonc` already turns previews on and the public `workers.dev` address off; the login is set up here:
+4. **Lock previews to officers.** Preview links show unmerged changes, so only officers should see them. `wrangler.jsonc` already turns previews on; the login is set up here:
    - Turn on Zero Trust if it isn't yet, choosing the **Free** plan: up to 50 people, and over that it refuses new logins instead of billing. Cloudflare may ask for a card; check Manage Account → Billing afterwards shows Zero Trust Free at $0.
    - The Worker → **Access** tab → **Protect this Worker behind Access** → **Previews only** (not "All traffic", which would put a login in front of the public site too) → pick a policy → **Apply Access**.
    - Then in Zero Trust → Access, edit that policy to **Include → Emails** with the officers' addresses, and use **One-time PIN** as the login method (Cloudflare emails a code; nothing else to set up). An email list is better than the "Cloudflare account" policy, which would mean making every officer a member of the Cloudflare account.
    - Set seat expiration (Zero Trust settings) so former officers free their seat.
    - Check: open a preview link in a private window. You should get a Cloudflare login page, not the site.
 5. Analytics & Logs → **Web Analytics** → enable for the domain (free, no cookies).
-6. Before moving the domain, check the new build on a PR's preview link (there's no `workers.dev` address to check instead). Once the new project serves the domain, delete the old Pages project.
+6. Before moving the domain, check the new build at the Worker's own address, `hive-society-website.<account>.workers.dev`, which always shows the latest `main`. Once the new project serves the domain, delete the old Pages project.
 
 **Google** (Hive Google account)
 - The **"Hive Shows - Website Calendar"** must stay **public**; its ID is in `content/site.yaml`.
@@ -281,7 +281,7 @@ Written with Node's built-in test runner (`node:test`, no extra framework). All 
 | File | What it guarantees |
 |---|---|
 | `tests/app.test.mts` | The local server behaves like Cloudflare: pages load at `/` and without `.html`, `.html`, `/index` and trailing-slash URLs redirect to the clean URL, Cloudflare's config files (`_redirects`, `_headers`) are never served, `_redirects` rules are followed (and unsupported rule syntax is rejected), unknown URLs get the 404 page with a 404 status; caching behaves (unchanged files answer "not modified", versioned files are cached long-term); links from `site.yaml` are filled in; the health-check URL works; attempts to read files outside the site (path traversal) are refused; only GET/HEAD requests are allowed |
-| `tests/render.test.mts` | Filling in named links (escaped safely; unknown names stop the build instead of leaving a dead link) and adding version codes to stylesheet/image URLs, relative or root-absolute (`/assets/…`); adding the canonical link and `og:` link-preview tags from the page's own title and description (escaped once; refused if a page already has them) |
+| `tests/render.test.mts` | Filling in the current year (footer copyright); filling in named links (escaped safely; unknown names stop the build instead of leaving a dead link) and adding version codes to stylesheet/image URLs, relative or root-absolute (`/assets/…`); adding the canonical link and `og:` link-preview tags from the page's own title and description (escaped once; refused if a page already has them) |
 | `tests/seo.test.mts` | Runs the real export and checks what search engines and link previews see: every page has one unique title (10-60 characters) and one unique description (50-160), a canonical link and `og:url` naming its clean URL on the bare domain, `og:title`/`og:description` matching the page, an absolute `og:image`, a language, and no `noindex`; the sitemap lists exactly the pages; `robots.txt` allows crawling and names the sitemap. Failing on a description? Rewrite it so it's unique and the right length |
 | `tests/site.test.mts` | `content/site.yaml` loads; mistakes are reported with the exact setting named; the "Add to Google Calendar" and Apple/Outlook links are built correctly |
 | `tests/forms.test.mts` | Reading a Google Form's questions, and detecting when a question was deleted/re-created or a new required one added. Uses a built-in sample, not the live form |
@@ -303,6 +303,7 @@ Written with Node's built-in test runner (`node:test`, no extra framework). All 
 | **Kubernetes manifests** | Checks the (optional) Kubernetes configuration is valid; see [CONTAINERIZATION.md](CONTAINERIZATION.md) | Same | Yes |
 | **Container image** | Builds the (optional) container and confirms it serves pages; see [CONTAINERIZATION.md](CONTAINERIZATION.md) | Same | Yes |
 | **Conventional PR title** | PR title starts with an allowed type ([§5](#5-versions-and-releases)) | When a PR is opened or edited | Yes |
+| **Label by PR type** | Labels the PR `type: <type>` from its title, plus `breaking` for `type!:` or a `BREAKING CHANGE:` line, so PRs can be filtered by kind: search `label:"type: content"`. Fixes itself when the title is edited | When a PR is opened or edited | No |
 | **Live form matches site settings** | `npm run check:form` against the real Google Form | Daily, on demand, and on PRs that change form settings | No: it depends on Google being reachable |
 | Dependabot | Opens PRs that update dependencies; they go through the checks above | Weekly | n/a |
 
