@@ -69,7 +69,8 @@ When a decision changes conventions, commands, or layout, update [AGENTS.md](../
 - [ ] CODEOWNERS: `content/**` editors vs `src/**`, `kube/**`, `.github/**` developers.
 
 ### Site
-- [ ] **Confirm team rosters in `content/teams.yaml`** (added 2026-10-08). Whiners came from the user; the Open Mic Surgery / new-team split is a guess (new team = Class of '30), and the new team needs its real name. Executive Board members Ilykeya, Daniel Shafiabady, and Katie Johnson aren't on a team yet.
+- [ ] **Name the new team** in `content/teams.yaml` (placeholder "NewBee Team (2026)", id `newbee-2026`).
+- [ ] **Allie Klusmeyer → Alumni?** Waiting on the user for her class year, if we decide to add her.
 - [ ] **Teams page is out of date**: still shows Mental Chillness and Twist & Trout; current teams are Unaccompanied Whiners, Open Mic Surgery, and the new team. `theme.yaml` has no `unaccompanied-whiners` entry.
 - [ ] **Show archive:** start recording past shows (title, date, team, venue, poster/photos), most recent first; e.g. Open Mic Surgery's Casino Night. Decide where it lives: a page here (data in `content/shows/`, rendered with Astro) or the revived handbook.
 - [ ] **Review the page descriptions by hand** (drafted 2026-10-03, the text under each page's link in search results and link previews): check facts and voice in each page's `<meta name="description">`. `tests/seo.test.mts` enforces only uniqueness and length.

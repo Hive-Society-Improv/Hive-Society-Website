@@ -15,10 +15,11 @@ teams:
   - id: unaccompanied-whiners
     name: Unaccompanied Whiners
     members:
-      - aarush-sinha
       - aaron-yock
+      - aarush-sinha
       - ari-warner
       - colin-crook
+      - daniel-shafiabady
       - jn-sowinski
       - kyle-freeman
       - lizzy-denneen
@@ -42,16 +43,14 @@ teams:
       - aashi-shah
       - connor-altan
       - henrikas-tatarunas
+      - ilykeya-murikurthy
       - jonathan-ocampo
       - kai-nelson-orr
-      - kedzie-gatta
+      - katie-johnson
       - liam-talavera
-      - natalia-restrepo
-      - ryan-berri
       - sai-gade
-      - zay-hamilton
 
-  # This year's new team (auditioned Fall 2026). Rename it here once it has a name.
+  # The newest team. Rename it here once it has a name.
   - id: newbee-2026
     name: NewBee Team (2026)
     members:
@@ -61,8 +60,12 @@ teams:
       - greg-kasper
       - justice-oh
       - katie-sims
+      - kedzie-gatta
       - mihika-samavedam
+      - natalia-restrepo
       - quentin-ruffo
       - ray-schomberg
       - roselyn-deeley
+      - ryan-berri
+      - zay-hamilton
       - ziv-avros
