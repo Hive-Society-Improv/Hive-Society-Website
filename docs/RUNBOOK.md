@@ -5,7 +5,7 @@ Everything needed to develop, check, deploy, and maintain the site, written so s
 - Not a developer? You want [EDITING.md](../EDITING.md).
 - Containers, Docker, Kubernetes: **optional**, and kept separately in [CONTAINERIZATION.md](CONTAINERIZATION.md). The live site doesn't need any of it.
 
-**Contents:** [1 Setup](#1-setup) · [2 How it fits together](#2-how-it-fits-together) · [3 npm scripts](#3-npm-scripts) · [4 Making a change](#4-making-a-change) · [5 Versions and releases](#5-versions-and-releases) · [6 Images](#6-images) · [7 Deploying](#7-deploying) · [8 One-time project setup](#8-one-time-project-setup) · [9 Roster changes](#9-roster-changes) · [10 Tests and checks](#10-tests-and-checks) · [11 When CI fails](#11-when-ci-fails) · [12 Routine maintenance](#12-routine-maintenance) · [13 Troubleshooting](#13-troubleshooting)
+**Contents:** [1 Setup](#1-setup) · [2 How it fits together](#2-how-it-fits-together) · [3 npm scripts](#3-npm-scripts) · [4 Making a change](#4-making-a-change) · [5 Versions and releases](#5-versions-and-releases) ([making a release](#making-a-release)) · [6 Images](#6-images) · [7 Deploying (Cloudflare)](#7-deploying) · [8 One-time project setup](#8-one-time-project-setup) ([GitHub](#github), [Cloudflare and the domain](#cloudflare), [Google](#google)) · [9 Roster changes](#9-roster-changes) · [10 Tests and checks](#10-tests-and-checks) · [11 When CI fails](#11-when-ci-fails) · [12 Routine maintenance](#12-routine-maintenance) · [13 Troubleshooting](#13-troubleshooting)
 
 ---
 
@@ -140,7 +140,9 @@ The site has a version number like **`1.4.2`**, following [Semantic Versioning](
 
 The rule of thumb: **if a change could make the live site behave or look different, even by accident, it gets at least a patch**, so any problem can be traced to the release that introduced it. Tests, CI, docs, and formatting can't, so they don't release.
 
-**Releases.** A bot (release-please, `.github/workflows/release-please.yml`) keeps one PR open titled like `chore(main): release 1.5.0`. Each merge to `main` adds to it: the changelog entry (from PR titles; the hidden types above don't appear) and the version in `package.json`. Merging the release PR tags `v1.5.0` and publishes a GitHub Release with the same notes, and `CHANGELOG.md` keeps them all. Don't edit `CHANGELOG.md` or the version by hand; fix a wrong entry by editing the release PR's description before merging.
+### Making a release
+
+A bot (release-please, `.github/workflows/release-please.yml`) keeps one PR open titled like `chore(main): release 1.5.0`. Each merge to `main` adds to it: the changelog entry (from PR titles; the hidden types above don't appear) and the version in `package.json`. Merging the release PR tags `v1.5.0` and publishes a GitHub Release with the same notes, and `CHANGELOG.md` keeps them all. Don't edit `CHANGELOG.md` or the version by hand; fix a wrong entry by editing the release PR's description before merging.
 
 - **Run its checks by hand.** GitHub doesn't run workflows for PRs a workflow opened (that stops bots from triggering each other forever), so the release PR's required checks never start on their own. **Close the release PR and reopen it**; the reopen comes from you, so the checks run.
 - **When to merge it:** whenever you want a release. Merging normal PRs already deploys the site; the release only names and records what's live, so batching a few changes into one release is fine.
@@ -205,7 +207,7 @@ Why it's strict: git keeps every version of every file forever, so one 5 MB phot
 
 The site is hosted as **Workers static assets**: Cloudflare serves the files in `dist/` straight from its network. No server code runs, and requests for static files are free. [`wrangler.jsonc`](../wrangler.jsonc) tells Cloudflare where the files are and how to handle URLs (clean URLs, `404.html`); `_redirects` and `_headers` in `dist/` work as they did on Pages.
 
-Cloudflare **builds straight from GitHub** (Workers Builds, [setup](#8-one-time-project-setup)):
+Cloudflare **builds straight from GitHub** (Workers Builds, [setup](#cloudflare)):
 
 - Every merge to `main` installs dependencies, then runs `npx wrangler deploy`: wrangler builds `dist/` itself (`npm run export`, the `build` command in `wrangler.jsonc`) and the live site updates.
 - Every other branch runs `npx wrangler preview` (Cloudflare's Worker Previews, in open beta), which gives it its own **preview URL** without touching the live site. Check changes there before merging. Preview links ask officers to log in (Cloudflare Access), since they show unmerged changes.
@@ -232,7 +234,8 @@ The calendar page will be built from the shows Google Calendar when the site is 
 
 Done once when the project is set up or handed to new owners. Steps still open are [issues labeled `area: infra`](https://github.com/Hive-Society-Improv/Hive-Society-Website/issues?q=is%3Aopen+label%3A%22area%3A+infra%22).
 
-**GitHub**
+### GitHub
+
 1. Create the repository (public), push `main`, and make `main` the default branch (Settings → General). Dependabot opens its PRs against the default branch.
 2. **Protect `main`:** Settings → Rules → Rulesets → New branch ruleset targeting `main`:
    - require a pull request before merging;
@@ -246,20 +249,27 @@ Done once when the project is set up or handed to new owners. Steps still open a
 6. **Let workflows open PRs** (needed by the release bot): Settings → Actions → General → Workflow permissions → tick **Allow GitHub Actions to create and approve pull requests**. Approvals aren't required on `main`, so this gives the bot nothing it can merge by itself.
 7. **Dependabot** runs automatically from `.github/dependabot.yml`. Turn on alerts under Settings → Code security.
 
-**Cloudflare Workers**
+### Cloudflare
+
 1. Cloudflare dashboard → Workers & Pages → Create → **Import a repository** → install Cloudflare's GitHub app and grant it this repository → select it.
 2. Build command `npm ci && npm run export` (the export also runs from `wrangler.jsonc`, so a missing or ignored build command can't ship an empty site); deploy command `npx wrangler deploy`; non-production branch deploy command `npx wrangler preview` (the default; it needs the `previews` block in `wrangler.jsonc`. If the beta misbehaves, `npx wrangler versions upload` also works); production branch `main`; root directory blank. No `NODE_VERSION` needed: `.nvmrc` sets it.
-3. Settings → Domains & Routes → add the custom domain `hivesocietyimprov.com`. Then send `www` to it: Rules → Redirect Rules → template **Redirect from WWW to root**, target `https://hivesocietyimprov.com` (not `www`, or it loops).
-4. **Lock previews to officers.** Preview links show unmerged changes, so only officers should see them. `wrangler.jsonc` already turns previews on; the login is set up here:
+3. **Lock previews to officers.** Preview links show unmerged changes, so only officers should see them. `wrangler.jsonc` already turns previews on; the login is set up here:
    - Turn on Zero Trust if it isn't yet, choosing the **Free** plan: up to 50 people, and over that it refuses new logins instead of billing. Cloudflare may ask for a card; check Manage Account → Billing afterwards shows Zero Trust Free at $0.
    - The Worker → **Access** tab → **Protect this Worker behind Access** → **Previews only** (not "All traffic", which would put a login in front of the public site too) → pick a policy → **Apply Access**.
    - Then in Zero Trust → Access, edit that policy to **Include → Emails** with the officers' addresses, and use **One-time PIN** as the login method (Cloudflare emails a code; nothing else to set up). An email list is better than the "Cloudflare account" policy, which would mean making every officer a member of the Cloudflare account.
    - Set seat expiration (Zero Trust settings) so former officers free their seat.
    - Check: open a preview link in a private window. You should get a Cloudflare login page, not the site.
-5. Analytics & Logs → **Web Analytics** → enable for the domain (free, no cookies).
-6. Before moving the domain, check the new build at the Worker's own address, `hive-society-website.<account>.workers.dev`, which always shows the latest `main`. Once the new project serves the domain, delete the old Pages project.
+4. Analytics & Logs → **Web Analytics** → enable for the domain (free, no cookies).
+5. **Move the domain to the Worker** (the cutover, [#73](https://github.com/Hive-Society-Improv/Hive-Society-Website/issues/73)).
+   - First check the new build at the Worker's own address, `hive-society-website.<account>.workers.dev`, which always shows the latest `main`.
+   - If the old Pages project lists `hivesocietyimprov.com` under **Custom domains**, remove it there. Then DNS → Records → delete the `hivesocietyimprov.com` CNAME to `hivesite-v2025.pages.dev`.
+   - The Worker → Settings → Domains & Routes → **Add** → **Custom domain** → `hivesocietyimprov.com`. Cloudflare creates the DNS record (type **Worker**, read-only) and the certificate itself; give it a minute. "A DNS record already exists for this hostname" means the CNAME is still there.
+   - **`www`:** Cloudflare only runs redirect rules for hostnames whose DNS record is **proxied** (orange cloud). A `www` record pointing at something that no longer answers gives a 522 error instead of a redirect. Make `www` a proxied `AAAA` record to `100::` (a placeholder address: Cloudflare answers every request itself, so nothing is ever sent there), then Rules → Redirect Rules → template **Redirect from WWW to root**, target `https://hivesocietyimprov.com` (not `www`, or it loops).
+   - **Keep the old Pages project for about two weeks.** Recreating the CNAME rolls back in a minute; deleting the project removes that option. Delete it once nothing has gone wrong.
 
-**Google** (Hive Google account)
+### Google
+
+In the Hive Google account:
 - The **"Hive Shows - Website Calendar"** must stay **public**; its ID is in `content/site.yaml`.
 - The mailing-list **Google Form**'s question IDs are in `content/site.yaml`; confirm with `npm run check:form`.
 
@@ -274,7 +284,7 @@ Done once when the project is set up or handed to new owners. Steps still open a
 1. On GitHub: **Actions** → **Approve roster removal** → **Run workflow**.
 2. Enter the PR number and run it.
 
-The action checks the person running it is listed in `ROSTER_OFFICERS` ([§8](#8-one-time-project-setup)), then marks the roster check as passed for that exact version of the PR. If anyone pushes more changes, the approval no longer applies and must be repeated.
+The action checks the person running it is listed in `ROSTER_OFFICERS` ([§8](#github)), then marks the roster check as passed for that exact version of the PR. If anyone pushes more changes, the approval no longer applies and must be repeated.
 
 **What's recorded:** no label, tag, file, or note in the PR. The only trace is the Action's run log, which GitHub deletes after the retention period. The person's removal is visible in git history like any other edit, and they simply don't appear on the next version of the site.
 
@@ -312,7 +322,7 @@ Written with Node's built-in test runner (`node:test`, no extra framework). All 
 | **Conventional PR title** | PR title starts with an allowed type ([§5](#5-versions-and-releases)) | When a PR is opened or edited | Yes |
 | **Label by PR type** | Labels the PR `type: <type>` from its title, plus `breaking` for `type!:` or a `BREAKING CHANGE:` line, so PRs can be filtered by kind: search `label:"type: content"`. Fixes itself when the title is edited | When a PR is opened or edited | No |
 | **Live form matches site settings** | `npm run check:form` against the real Google Form | Daily, on demand, and on PRs that change form settings | No: it depends on Google being reachable |
-| **Release PR** | Opens or updates the release PR from what's been merged ([§5](#5-versions-and-releases)) | Every update to `main` | n/a |
+| **Release PR** | Opens or updates the release PR from what's been merged ([§5](#making-a-release)) | Every update to `main` | n/a |
 | Dependabot | Opens PRs that update dependencies; they go through the checks above | Weekly | n/a |
 
 **Changes made in the site editor (CMS)** also arrive as PRs, so the same checks apply to them: a bad color or oversized photo from the editor fails CI like any other change. The editor doesn't run `npm` itself; it runs in the browser. It will get its own instant field checks (e.g. color format) when it's configured, so editors see mistakes before saving.

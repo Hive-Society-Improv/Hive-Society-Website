@@ -46,7 +46,7 @@ A **container registry** is to images what GitHub is to code: a place to upload 
 - **Provider-neutral.** Any host can pull from it, unlike a cloud provider's own registry (e.g. DigitalOcean's), which would tie the image to that provider.
 - **Versioned.** Each release is pushed as `ghcr.io/hive-society-improv/hive-site:<version>`, and the production cluster runs the version named in `kube/overlays/prod/kustomization.yaml`. Rolling back means pointing at the previous tag.
 
-Publishing an image by hand (until release automation does it; see [RUNBOOK §5](RUNBOOK.md#5-versions-and-releases)):
+Publishing an image by hand (until release automation does it; see [RUNBOOK §5](RUNBOOK.md#making-a-release)):
 
 ```bash
 echo "$GITHUB_TOKEN" | docker login ghcr.io -u <github-user> --password-stdin   # a token with write:packages
