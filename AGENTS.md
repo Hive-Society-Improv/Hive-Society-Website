@@ -63,7 +63,8 @@ wrangler.jsonc         Cloudflare deploy config: Workers static assets serving d
 .nvmrc                 Node version (26) for nvm, CI (`node-version-file`), and Cloudflare's build machine; the Dockerfile's `node:26-alpine` must match
 scripts/validate-theme.mts   CLI used by CI
 tests/*.test.mts       node:test suites (server, theme, local link/asset check)
-.github/               ci.yml (required checks), pr-title.yml (allowed PR types: the one list), pr-labels.yml (labels PRs by type from it), dependabot.yml
+.github/               ci.yml (required checks), pr-title.yml (allowed PR types: the one list), pr-labels.yml (labels PRs by type from it), release-please.yml (release PR), dependabot.yml
+release-please-config.json   which PR-title types release and how they appear in CHANGELOG.md (keep in step with the type table below); .release-please-manifest.json = last released version (the bot updates it)
 kube/base, kube/overlays/{local,prod}   Kustomize; prod = k3s + Cloudflare Tunnel
 docs/                  RUNBOOK.md (commands/procedures), ARCHITECTURE.md (stack, rationale, theme rules, caching), PROJECT_LOG.md (decisions), site-audit.md
 ```
@@ -103,7 +104,7 @@ docs/                  RUNBOOK.md (commands/procedures), ARCHITECTURE.md (stack,
 ### Commits, PRs, and versioning
 `main` is branch-protected: **all changes go through a PR on a branch**, required CI checks must pass before merge, and PRs are squash-merged. Never commit or push to `main` directly, and never bypass or weaken protection or required checks to get a change in. If a check is wrong, fix the check in its own PR.
 
-Conventional Commits; the PR title becomes the squash commit message and is checked by `.github/workflows/pr-title.yml`. If you change the allowed types, update that file, this table, and RUNBOOK §5 together. The version is bumped automatically. **Never edit `version` in `package.json` by hand.**
+Conventional Commits; the PR title becomes the squash commit message and is checked by `.github/workflows/pr-title.yml`. If you change the allowed types, update that file, this table, and RUNBOOK §5 together. The version is bumped automatically by the release PR (RUNBOOK §5). **Never edit `version` in `package.json`, `CHANGELOG.md`, or `.release-please-manifest.json` by hand.**
 
 | Type | Use for | Release |
 |---|---|---|

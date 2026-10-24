@@ -1,0 +1,28 @@
+# Keeps a "chore(main): release X.Y.Z" PR open that collects merged changes into CHANGELOG.md and
+# bumps package.json. Merging it tags vX.Y.Z and publishes a GitHub Release. Which PR-title types
+# release, and how they bump, is in release-please-config.json (matches docs/RUNBOOK.md §5).
+#
+# It uses the built-in GITHUB_TOKEN, and GitHub doesn't run workflows for PRs that token opens, so the
+# release PR's required checks never start on their own: close and reopen it to run them (RUNBOOK §5).
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write # tags, releases, the release branch
+  pull-requests: write # open and update the release PR
+  issues: write # release-please labels its PRs (labels are an issues API)
+
+concurrency:
+  group: release-please
+  cancel-in-progress: false
+
+jobs:
+  release-please:
+    name: Release PR
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0

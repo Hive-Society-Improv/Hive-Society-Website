@@ -140,7 +140,11 @@ The site has a version number like **`1.4.2`**, following [Semantic Versioning](
 
 The rule of thumb: **if a change could make the live site behave or look different, even by accident, it gets at least a patch**, so any problem can be traced to the release that introduced it. Tests, CI, docs, and formatting can't, so they don't release.
 
-**Releases** *(automation planned: [#52](https://github.com/Hive-Society-Improv/Hive-Society-Website/issues/52))*: a bot (release-please) keeps a "Release v1.5.0" PR open that collects merged changes into a changelog. Merging that PR creates the git tag `v1.5.0` and a GitHub Release with the notes, and publishes the matching container image. Until then there are no version tags.
+**Releases.** A bot (release-please, `.github/workflows/release-please.yml`) keeps one PR open titled like `chore(main): release 1.5.0`. Each merge to `main` adds to it: the changelog entry (from PR titles; the hidden types above don't appear) and the version in `package.json`. Merging the release PR tags `v1.5.0` and publishes a GitHub Release with the same notes, and `CHANGELOG.md` keeps them all. Don't edit `CHANGELOG.md` or the version by hand; fix a wrong entry by editing the release PR's description before merging.
+
+- **Run its checks by hand.** GitHub doesn't run workflows for PRs a workflow opened (that stops bots from triggering each other forever), so the release PR's required checks never start on their own. **Close the release PR and reopen it**; the reopen comes from you, so the checks run.
+- **When to merge it:** whenever you want a release. Merging normal PRs already deploys the site; the release only names and records what's live, so batching a few changes into one release is fine.
+- **Which types count** is set in `release-please-config.json` (`changelog-sections`). Keep it in step with the table above: a type that should release must be listed without `"hidden": true`.
 
 ## 6. Images
 
@@ -239,7 +243,8 @@ Done once when the project is set up or handed to new owners. Steps still open a
 3. **Roster officers:** Settings → Secrets and variables → Actions → Variables → new variable `ROSTER_OFFICERS` = comma-separated GitHub usernames of officers allowed to approve roster overrides (e.g. for removing someone from the roster without marking them as alumni, or when someone is kicked out of Hive). See [§9](#9-roster-changes).
 4. **Log retention:** Settings → Actions → General → artifact and log retention, e.g. 30 days. Roster-override approvals exist only in these logs.
 5. **Team members only:** Settings → Moderation options → Interaction limits → **Limit to repository collaborators**, for 6 months (the longest GitHub allows, so renew it; [#80](https://github.com/Hive-Society-Improv/Hive-Society-Website/issues/80) tracks the date). Outsiders can still view and fork, but can't open issues or PRs or comment. Automated accounts send drive-by AI PRs to issues labeled `good first issue`, which we keep for teammates. Add each new teammate as a collaborator, or the limit blocks them too.
-5. **Dependabot** runs automatically from `.github/dependabot.yml`. Turn on alerts under Settings → Code security.
+6. **Let workflows open PRs** (needed by the release bot): Settings → Actions → General → Workflow permissions → tick **Allow GitHub Actions to create and approve pull requests**. Approvals aren't required on `main`, so this gives the bot nothing it can merge by itself.
+7. **Dependabot** runs automatically from `.github/dependabot.yml`. Turn on alerts under Settings → Code security.
 
 **Cloudflare Workers**
 1. Cloudflare dashboard → Workers & Pages → Create → **Import a repository** → install Cloudflare's GitHub app and grant it this repository → select it.
@@ -307,6 +312,7 @@ Written with Node's built-in test runner (`node:test`, no extra framework). All 
 | **Conventional PR title** | PR title starts with an allowed type ([§5](#5-versions-and-releases)) | When a PR is opened or edited | Yes |
 | **Label by PR type** | Labels the PR `type: <type>` from its title, plus `breaking` for `type!:` or a `BREAKING CHANGE:` line, so PRs can be filtered by kind: search `label:"type: content"`. Fixes itself when the title is edited | When a PR is opened or edited | No |
 | **Live form matches site settings** | `npm run check:form` against the real Google Form | Daily, on demand, and on PRs that change form settings | No: it depends on Google being reachable |
+| **Release PR** | Opens or updates the release PR from what's been merged ([§5](#5-versions-and-releases)) | Every update to `main` | n/a |
 | Dependabot | Opens PRs that update dependencies; they go through the checks above | Weekly | n/a |
 
 **Changes made in the site editor (CMS)** also arrive as PRs, so the same checks apply to them: a bad color or oversized photo from the editor fails CI like any other change. The editor doesn't run `npm` itself; it runs in the browser. It will get its own instant field checks (e.g. color format) when it's configured, so editors see mistakes before saving.
