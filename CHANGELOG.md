@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/Hive-Society-Improv/Hive-Society-Website/compare/v1.0.0...v1.0.1) (2026-10-24)
+
+
+### Content
+
+* new portraits, Charlie Avros's name, new-member quips ([#93](https://github.com/Hive-Society-Improv/Hive-Society-Website/issues/93)) ([ce48306](https://github.com/Hive-Society-Improv/Hive-Society-Website/commit/ce48306cdc7544bee6da1a1f7bba510feb51ddc0))
+
 ## 1.0.0 (2026-10-24)
 
 
