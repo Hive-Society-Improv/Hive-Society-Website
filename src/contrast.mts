@@ -49,10 +49,7 @@ export const CONTRAST_PAIRS: readonly ContrastPair[] = [
  * Known failures that warn instead of failing CI, keyed `fg on bg`. Each needs a reason and should
  * be temporary: fix the color, then delete the entry (a stale entry is reported).
  */
-export const CONTRAST_WAIVERS: Readonly<Partial<Record<string, string>>> = {
-  'links.text on page.background': 'Inherited from the Mobirise site; new link colors pending a design decision (issue #26)',
-  'links.hover-text on page.background': 'Same as links.text',
-};
+export const CONTRAST_WAIVERS: Readonly<Partial<Record<string, string>>> = {};
 
 export interface ContrastResult {
   pair: ContrastPair;
