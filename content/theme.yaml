@@ -37,8 +37,8 @@ buttons:
   hover-text: "#ffffff"
 
 links:
-  text: "#ffa600" # fails contrast on page.background; see docs/site-audit.md
-  hover-text: "#996400"
+  text: "#9a4a00"
+  hover-text: "#6e3c00"
 
 member-cards:
   background: "#ffeb69"
