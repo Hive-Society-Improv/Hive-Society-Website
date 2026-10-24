@@ -210,7 +210,7 @@ The site is hosted as **Workers static assets**: Cloudflare serves the files in 
 Cloudflare **builds straight from GitHub** (Workers Builds, [setup](#cloudflare)):
 
 - Every merge to `main` installs dependencies, then runs `npx wrangler deploy`: wrangler builds `dist/` itself (`npm run export`, the `build` command in `wrangler.jsonc`) and the live site updates.
-- Every other branch runs `npx wrangler preview` (Cloudflare's Worker Previews, in open beta), which gives it its own **preview URL** without touching the live site. Check changes there before merging. Preview links ask officers to log in (Cloudflare Access), since they show unmerged changes.
+- Every other branch runs `npx wrangler preview` (Cloudflare's Worker Previews, in open beta), which gives it its own **preview URL** without touching the live site. Check changes there before merging. Previews are served under `*.dev.hivesocietyimprov.com`. They show unmerged changes, so they're meant to ask officers to log in (Cloudflare Access, [§8 → Cloudflare](#cloudflare) step 3); until that's set up ([#14](https://github.com/Hive-Society-Improv/Hive-Society-Website/issues/14)), anyone with the link can open them.
 
 The build machine's Node version comes from `.nvmrc`.
 
@@ -254,10 +254,12 @@ Done once when the project is set up or handed to new owners. Steps still open a
 1. Cloudflare dashboard → Workers & Pages → Create → **Import a repository** → install Cloudflare's GitHub app and grant it this repository → select it.
 2. Build command `npm ci && npm run export` (the export also runs from `wrangler.jsonc`, so a missing or ignored build command can't ship an empty site); deploy command `npx wrangler deploy`; non-production branch deploy command `npx wrangler preview` (the default; it needs the `previews` block in `wrangler.jsonc`. If the beta misbehaves, `npx wrangler versions upload` also works); production branch `main`; root directory blank. No `NODE_VERSION` needed: `.nvmrc` sets it.
 3. **Lock previews to officers.** Preview links show unmerged changes, so only officers should see them. `wrangler.jsonc` already turns previews on; the login is set up here:
-   - Turn on Zero Trust if it isn't yet, choosing the **Free** plan: up to 50 people, and over that it refuses new logins instead of billing. Cloudflare may ask for a card; check Manage Account → Billing afterwards shows Zero Trust Free at $0.
+   - Turn on Zero Trust if it isn't yet, choosing the **Free** plan (up to 50 people). It takes a card, and its terms bill use beyond the free limit, so the steps below keep the number of people who can log in far under 50. Afterwards, check Manage Account → Billing → Subscriptions shows Zero Trust Free at $0.
    - The Worker → **Access** tab → **Protect this Worker behind Access** → **Previews only** (not "All traffic", which would put a login in front of the public site too) → pick a policy → **Apply Access**.
-   - Then in Zero Trust → Access, edit that policy to **Include → Emails** with the officers' addresses, and use **One-time PIN** as the login method (Cloudflare emails a code; nothing else to set up). An email list is better than the "Cloudflare account" policy, which would mean making every officer a member of the Cloudflare account.
-   - Set seat expiration (Zero Trust settings) so former officers free their seat.
+   - Then in Zero Trust → Access, edit that policy to **Include → Emails** with the officers' addresses, and use **One-time PIN** as the login method (Cloudflare emails a code; nothing else to set up). An email list is better than the "Cloudflare account" policy, which would mean making every officer a member of the Cloudflare account. Never widen it to everyone, a whole email domain, or another login provider: each person who gets in takes a seat, and the email list is what keeps the count near the number of officers.
+   - Set seat expiration to **1 month**, the shortest (Zero Trust settings → seat management): once a day, anyone who hasn't logged in for a month gives their seat back, so former officers drop off on their own. To lock someone out, take them off the email list; "Revoke" only ends their current session and still uses a seat.
+   - Don't install the WARP client or enroll devices. Only Access is needed, and each enrolled device also takes a seat.
+   - Billing alert: Manage Account → Billing → Billable Usage → budget alert at **$1**, so any charge on the account emails the owner (the day after; Cloudflare doesn't say whether seat overages count, so it's a backstop, not the safeguard).
    - Check: open a preview link in a private window. You should get a Cloudflare login page, not the site.
 4. Analytics & Logs → **Web Analytics** → enable for the domain (free, no cookies).
 5. **Move the domain to the Worker** (the cutover, [#73](https://github.com/Hive-Society-Improv/Hive-Society-Website/issues/73)).
@@ -357,8 +359,8 @@ Open the failed check on the PR and read the log; every check prints what's wron
 | Weekly | Review and merge Dependabot PRs once their checks pass. If one fails because two packages can't agree on a version (`npm ci` says `ERESOLVE`), don't force it: hold that update with an `ignore` entry in `.github/dependabot.yml`, with a comment saying when to remove it |
 | When the daily form check emails you | [§11](#11-when-ci-fails), last row |
 | Start of each semester | Upcoming shows are in the shows calendar; roster is updated (leavers → Alumni); `ROSTER_OFFICERS` lists current officers |
-| When officers change | Update GitHub access, `ROSTER_OFFICERS`, and who can access the Hive Google and Cloudflare accounts |
-| Before making the repo public | Review git history for anything that shouldn't be public |
+| Monthly | Cloudflare: Zero Trust → Users shows a handful of active seats (far under 50), and Billing → Subscriptions still says Zero Trust Free, $0 |
+| When officers change | Update GitHub access (add new officers as collaborators: outsiders can't open PRs), `ROSTER_OFFICERS`, the preview-login email list in Zero Trust, and who can access the Hive Google and Cloudflare accounts |
 
 ## 13. Troubleshooting
 
